@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { REDIS } from './redis/redis.constants';
 import { CustomPrismaModule } from 'nestjs-prisma';
@@ -62,6 +63,7 @@ export class AppModule {
       client: this.redis,
     });
     const middlewares = [
+      LoggerMiddleware,
       cookieParser(),
       session({
         store,
@@ -75,6 +77,8 @@ export class AppModule {
       passport.initialize(),
       passport.session(),
     ];
+
+    // 모든 엔드포인트에 미들웨어 적용
     consumer.apply(...middlewares).forRoutes('*');
   }
 }
